@@ -1,0 +1,149 @@
+    <footer>
+        <div class="footer-container">
+            <div class="footer-top-row">
+                <a href="https://www.linkedin.com/in/juanpabloescobari" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="mailto:jpe911@gmail.com" style="text-decoration: none; color: #ffffff;" target="_blank"><i class="fa-solid fa-at"></i></a>
+                <a href="https://github.com/Cone911?tab=repositories" target="_blank"><i class="fa-brands fa-square-github"></i></a>
+            </div>
+            <div class="footer-second-row">
+                <p style="font-family: 'Trebuchet MS', sans-serif;">JP Develops 2024 &nbsp;
+                 <i class="fa-solid fa-copyright"></i> &nbsp;
+                 <em>Baby Steps Technologies. La Paz, Bolivia.</em>
+                </p>
+            </div>
+        </div>
+    </footer>
+  </body>
+  <!-- Script that renders my icons from FontAwesome.com -->
+  <script src="https://kit.fontawesome.com/c74386571e.js" crossorigin="anonymous"></script>
+  <script>
+
+
+let player;
+let isPlayerReady = false;
+
+const mediaControls = document.querySelector('.media-controls-container');
+
+function onPlayerReady(event) {
+    console.log('YouTube Player is ready.');
+    isPlayerReady = true;
+}
+
+function extractVideoId(url) {
+    let videoId = '';
+
+    if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+    } else if (url.includes('youtube.com/watch')) {
+        const parts = url.split('v=');
+        videoId = parts[1].split('&')[0];
+    }
+
+    return videoId;
+}
+
+function openInIframe(url, cardElement, songId) {
+    const videoId = extractVideoId(url);
+
+    if (!isPlayerReady) {
+        // Initialize the player only when the user interacts with the page (e.g., clicks play)
+        player = new YT.Player('videoPlayer', {
+            events: {
+                'onReady': () => {
+                    onPlayerReady();
+                    player.loadVideoById(videoId);  // Load video when player is ready
+                },
+                'onStateChange': onPlayerStateChange // Add state change event listener
+            }
+        });
+    } else {
+        // Load the video directly if the player is ready
+        player.loadVideoById(videoId);
+    }
+
+    const allVinylElements = document.querySelectorAll('.plate');
+    allVinylElements.forEach((vinyl) => {
+        vinyl.classList.remove('rotation');
+    });
+
+    // Rotate vinyl for the playing song + add 'played' class
+    const requestItemElement = cardElement.closest('.requestItem');
+    const vinylElement = requestItemElement.querySelector('.plate');
+    requestItemElement.classList.add('played');
+    vinylElement.classList.add('rotation');
+    mediaControls.classList.add('audio-spectrum')
+
+    // Update song 'played' property to true.
+    fetch(`/songs/${songId}/played`, { method: 'PUT' })
+        .then(res => res.json())
+        .then(data => console.log("The server said:", data));
+    
+    updateSongInfo(songId);
+}
+
+function updateSongInfo(songId) {
+    const songTitle = document.getElementById(`title-${songId}`).textContent || 'Unknown Title';
+    const songArtist = document.getElementById(`artist-${songId}`).textContent || 'Unknown Artist';
+    const songRequester = document.getElementById(`user-${songId}`).textContent || 'Unknown';
+
+    document.getElementById('songTitle').innerHTML = `Title: <span style="color: rgb(205, 205, 205);">${songTitle}</span>`;
+    document.getElementById('songArtist').innerHTML = `Artist: <span style="color: rgb(205, 205, 205);">${songArtist}</span>`;
+    document.getElementById('songRequester').innerHTML = `Requested by: <span style="color: rgb(205, 205, 205);">${songRequester}</span>`;
+}
+
+function playVideo() {
+    player.playVideo();
+    mediaControls.classList.add('audio-spectrum');
+}
+
+function pauseVideo() {
+    player.pauseVideo();
+    mediaControls.classList.remove('audio-spectrum');
+}
+
+function toggleMute() {
+    if (player.isMuted()) {
+        player.unMute();
+    
+        document.getElementById('mute-button').classList.remove('fa-volume-xmark');
+        document.getElementById('mute-button').classList.add('fa-volume-high');
+        mediaControls.classList.add('audio-spectrum');
+    } else {
+        player.mute();
+        
+        document.getElementById('mute-button').classList.remove('fa-volume-high');
+        document.getElementById('mute-button').classList.add('fa-volume-xmark');
+        mediaControls.classList.remove('audio-spectrum');
+    }
+}
+
+function restartVideo() {
+        player.seekTo(0);
+        player.playVideo();  // Start playing the video again
+}
+
+function changeVolume(volume) {
+    if (player && isPlayerReady) {
+        player.setVolume(volume);
+    }
+}
+
+document.getElementById('volumeSlider').addEventListener('input', function () {
+    const volume = this.value;
+    changeVolume(volume);
+});
+
+
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        const rotatingVinyl = document.querySelector('.plate.rotation');
+        if (rotatingVinyl) {
+            rotatingVinyl.classList.remove('rotation');
+        }
+        mediaControls.classList.remove('audio-spectrum');
+    }
+}
+
+</script>
+</html>

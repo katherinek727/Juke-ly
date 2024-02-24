@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JUKE.LY: Party Playlist</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <!-- Profile and Vinyl Spinning Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <!-- YouTube API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/c74386571e.js" crossorigin="anonymous"></script> 
+
+</head>
+
+<body>
+      <% if (user) { %>
+      <div class="top-container">
+          <div class="leftSideNav"> 
+            <a href="/songs"><h1 class="logo">JUKE.LY</h1></a> 
+            <i class="fa-regular fa-circle-user fa-spin fa-2xl" style="--fa-animation-duration: 5s;"></i><p> <%= user.name %> </p>
+          </div>
+          
+          <nav class="navbar">
+              <ul class="navList">
+                  <li class="navItem"><a class="navLink" href="/songs">All Songs</a></li>
+                  <li class="navItem"><a class="navLink" href="/songs/new"><i class="fa-solid fa-plus fa-xs" style="color: #f8e570; vertical-align: 1px;"></i> Queue a Song</a></li>
+                  <li class="navItem"><a class="navLink" href="/auth/sign-out"><i class="fa-solid fa-circle-xmark fa-xs" style="color: #f8e570; vertical-align: 1px;"></i> Sign Out</a></li>
+              </ul>
+          </nav>
+      </div>
+      <% } else { %>
+      <div class="top-container">
+          <div class="leftSideNav"> 
+            <a href="/songs"><h1 class="logo">JUKE.LY</h1></a>
+          </div>
+          
+          <nav class="navbar">
+              <ul class="navList">
+                  <li class="navItem"><a class="navLink" href="/auth/sign-up"><i class="fa-solid fa-square-caret-up fa-xs" style="color: #f8e671; vertical-align: 1px;"></i> Sign Up</a></li>
+                  <li class="navItem"><a class="navLink" href="/auth/login"><i class="fa-solid fa-arrow-right-to-bracket fa-xs" style="color: #fdff83; vertical-align: 2px;"></i> Log In</a></li>
+              </ul>
+          </nav>
+      </div>
+      <% } %>
+     
+
+
